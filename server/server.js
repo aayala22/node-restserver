@@ -10,6 +10,9 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 app
+    .get('/', function(req, res) {
+        res.json('Index')
+    })
     .get('/usuarios', function(req, res) {
         res.json('get usuarios')
     })

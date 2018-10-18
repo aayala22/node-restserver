@@ -1,45 +1,33 @@
 require('./config/config.js');
+
 const express = require('express')
-const app = express()
+const mongoose = require('mongoose') //conexion a MongoDB
+const path = require('path')
+
+
+const app = express();
 const bodyParser = require('body-parser')
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
-
-// parse application/json
-app.use(bodyParser.json())
-
 app
-    .get('/', function(req, res) {
-        res.json('Index')
-    })
-    .get('/usuarios', function(req, res) {
-        res.json('get usuarios')
-    })
-    .post('/usuarios', function(req, res) {
+    .use(bodyParser.urlencoded({ extended: false }))
+    // parse application/json
+    .use(bodyParser.json())
+    .use(express.static(`${__dirname}/public`))
+    .use(require('./rutas/index.js'))
+    // app
+    // .get('/', function(req, res) {
+    //     res.render('index.html')
+    //         // res.json('Index')
+    // })
 
-        let body = req.body;
+mongoose.set('useCreateIndex', true)
+mongoose.set('useNewUrlParser', true)
+mongoose.connect('mongodb://localhost:27017/cafe', (err, res) => {
+    if (err) throw err;
+    console.log("Base de datos online");
 
-        if (body.nombre == undefined) {
-            res.status(400).json({
-                ok: false,
-                mensaje: `El nombre es necesario`
-            });
-        } else {
-            res.json({
-                persona: body
-            })
-        }
-    })
-    .put('/usuarios/:id', function(req, res) {
-        let identificacion = req.params.id;
-        res.json({
-            identificacion: identificacion
-        })
-    })
-    .delete('/usuarios', function(req, res) {
-        res.json('delete usuarios')
-    })
+});
 
 app.listen(process.env.PORT, () => {
     console.log(`Ejecutando en el puerto ${process.env.PORT}`);
